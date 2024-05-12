@@ -2,23 +2,18 @@ use colored::*;
 use chrono::*;
 
 fn main() {
-    let user = {
-        let u = std::env::var("USER")
-            .expect("USER environment variable does not exist.");
-
-        let mut user = String::new();
-
-        for character in u.chars() {
-            user.push_str(&character.to_string());
-        }
-
-        user
-    };
+    let user = std::env::var("USER")
+        .expect("USER variable does not exist");
 
     let time: (String, String) = {
         let t = offset::Local::now();
         let hour = t.hour();
-        let full_time = format!("{}:{}", hour, t.minute());
+        let full_time = {
+            if t.hour() < 10 && t.minute() < 10 { format!("0{}:0{}", t.hour(), t.minute()) }
+            else if t.hour() < 10 && t.minute() >= 10 { format!("0{}:{}", t.hour(), t.minute()) }
+            else if t.hour() >= 10 && t.minute() < 10 { format!("{}:0{}", t.hour(), t.minute()) }
+            else { format!("{}:{}", t.hour(), t.minute()) }
+        };
 
         let message = {
             if hour > 20 && hour < 06 { format!("{}", "Good Night".bold().blue()) }
